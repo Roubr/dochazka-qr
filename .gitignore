@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtuální prostředí
+venv/
+env/
+
+# Databáze
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Lokální konfigurace a tajné klíče
+.env

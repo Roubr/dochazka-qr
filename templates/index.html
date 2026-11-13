@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testovací docházka</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #1e1e2e; color: #cdd6f4; }
+        .container { max-width: 800px; margin: auto; background: #313244; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        h2 { text-align: center; color: #cba6f7; margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 15px; font-size: 18px; margin-bottom: 30px; border: 2px solid #585b70; border-radius: 8px; background: #45475a; color: #cdd6f4; box-sizing: border-box; }
+        input[type="text"]:focus { outline: none; border-color: #89b4fa; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1e1e2e; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; border-bottom: 1px solid #313244; text-align: left; }
+        th { background-color: #11111b; font-weight: 600; text-transform: uppercase; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        .prichod { color: #a6e3a1; font-weight: bold; }
+        .odchod { color: #f38ba8; font-weight: bold; }
+    </style>
+</head>
+<body onload="document.getElementById('qr_input').focus()">
+    <div class="container">
+        <h2>Systém evidence docházky</h2>
+        
+        <form method="POST" action="/scan">
+            <input type="text" id="qr_input" name="qr_data" placeholder="Naskenujte kód pracovníka..." autofocus autocomplete="off">
+        </form>
+        
+        <table>
+            <tr>
+                <th>Jméno a příjmení</th>
+                <th>Událost</th>
+                <th>Důvod</th>
+                <th>Čas záznamu</th>
+            </tr>
+            {% for row in zaznamy %}
+            <tr>
+                <td>{{ row.jmeno }}</td>
+                <td class="{{ 'prichod' if row.typ == 'Příchod' else 'odchod' }}">{{ row.typ }}</td>
+                <td style="color: #f38ba8; font-style: italic;">{{ row.duvod if row.duvod else '' }}</td>
+                <td>{{ row.cas }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        // Udržení zaměření pole pro čtečku i při kliknutí jinam
+        document.addEventListener('click', function() {
+            document.getElementById('qr_input').focus();
+        });
+    </script>
+</body>
+</html>

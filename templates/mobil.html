@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Propustka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .qr-container { text-align: center; margin-top: 20px; }
+        .qr-container img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h3 class="mb-4 text-center">Terminál v mobilu</h3>
+        
+        {% if qr_b64 %}
+            <div class="alert alert-success">QR kód připraven. Nyní jej můžete přiložit ke čtečce.</div>
+            <div class="card p-3 mb-4 shadow-sm">
+                <p class="mb-1"><strong>Zaměstnanec:</strong> {{ jmeno }}</p>
+                <p class="mb-1"><strong>Událost:</strong> {{ typ }}</p>
+                {% if duvod %}<p class="mb-0"><strong>Důvod:</strong> {{ duvod }}</p>{% endif %}
+            </div>
+            <div class="qr-container">
+                <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Kód">
+            </div>
+            <div class="d-grid mt-4">
+                <a href="/mobil" class="btn btn-secondary btn-lg">Zpět na generátor</a>
+            </div>
+        {% else %}
+            <div class="card p-4 shadow-sm">
+                <form method="POST" action="/generovat">
+                    <div class="mb-3">
+                        <label for="jmeno" class="form-label">Vaše jméno:</label>
+                        <input type="text" class="form-control form-control-lg" id="jmeno" name="jmeno" required placeholder="Např. Jan Novák">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="typ" class="form-label">Typ události:</label>
+                        <select class="form-select form-select-lg" id="typ" name="typ" onchange="toggleDuvod()" required>
+                            <option value="Odchod" selected>Odchod z pracoviště</option>
+                            <option value="Příchod">Návrat / Příchod</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4" id="div_duvod">
+                        <label for="duvod" class="form-label">Důvod opuštění pracoviště:</label>
+                        <select class="form-select form-select-lg" id="duvod" name="duvod" required>
+                            <option value="" selected disabled>Vyberte důvod...</option>
+                            <option value="Lékař">Lékař</option>
+                            <option value="Služební cesta">Služební cesta</option>
+                            <option value="Soukromé / Jiné">Soukromé / Jiné</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Vygenerovat QR kód</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function toggleDuvod() {
+            var typ = document.getElementById('typ').value;
+            var divDuvod = document.getElementById('div_duvod');
+            var selectDuvod = document.getElementById('duvod');
+            
+            if (typ === 'Příchod') {
+                divDuvod.style.display = 'none';
+                selectDuvod.removeAttribute('required');
+            } else {
+                divDuvod.style.display = 'block';
+                selectDuvod.setAttribute('required', 'required');
+            }
+        }
+        window.onload = toggleDuvod;
+    </script>
+</body>
+</html>
